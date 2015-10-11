@@ -7,11 +7,6 @@ struct Block {
   size_t size;
 };
 
-struct Block {
-  void *pointer;
-  size_t size;
-};
-
 typedef struct Block Block;
 
 static long int prv_page_size;
