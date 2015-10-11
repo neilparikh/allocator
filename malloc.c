@@ -1,23 +1,27 @@
 #include "malloc.h"
 
-#include <stdlib.h>
+#include <unistd.h>
 
 struct Block {
   void *pointer;
   size_t size;
 };
 
+typedef struct Block Block;
+
 static long int prv_page_size;
 static void *prv_start_break;
 static void *prv_end_break;
 static void *prv_start_available;
 static int prv_init = 0;
+static Block *prv_used_blocks;
+static Block *prv_free_blocks;
 
 static void prv_setup(void) {
   prv_page_size = getpagesize();
-  sbrk(0);
-  prv_start_break = prv_end_break = sbrk(0);
-  prv_start_available = prv_start_break;
+  prv_used_blocks = sbrk(20 * sizeof(Block));
+  prv_free_blocks = sbrk(20 * sizeof(Block));
+  prv_start_available = prv_start_break = prv_end_break = sbrk(0);
 }
 
 static void prv_add_page(void) {
