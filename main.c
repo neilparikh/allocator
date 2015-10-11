@@ -2,8 +2,9 @@
 #include "malloc.h"
 
 int main(void) {
-  int* test = myMalloc(sizeof(int));
-  int* test2 = myMalloc(sizeof(int));
+  int* test = my_malloc(sizeof(int));
+  int* test2 = my_malloc(sizeof(int));
   *test = 3;
   printf("%d\n", *test);
+  cleanup();
 }
