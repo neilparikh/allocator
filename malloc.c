@@ -9,42 +9,42 @@ struct Block {
 
 typedef struct Block Block;
 
-static long int prv_page_size;
-static void *prv_start_break;
-static void *prv_end_break;
-static void *prv_start_available;
-static int prv_init = 0;
-static Block *prv_used_blocks;
-static Block *prv_free_blocks;
+static long int s_page_size;
+static void *s_start_break;
+static void *s_end_break;
+static void *s_start_available;
+static int s_init = 0;
+static Block *s_used_blocks;
+static Block *s_free_blocks;
 
 static void prv_setup(void) {
-  prv_page_size = getpagesize();
-  prv_used_blocks = sbrk(20 * sizeof(Block));
-  prv_free_blocks = sbrk(20 * sizeof(Block));
-  prv_start_available = prv_start_break = prv_end_break = sbrk(0);
+  s_page_size = getpagesize();
+  s_used_blocks = sbrk(20 * sizeof(Block));
+  s_free_blocks = sbrk(20 * sizeof(Block));
+  s_start_available = s_start_break = s_end_break = sbrk(0);
 }
 
 static void prv_add_page(void) {
-  sbrk(prv_page_size);
-  prv_end_break = sbrk(0);
+  sbrk(s_page_size);
+  s_end_break = sbrk(0);
 }
 
 void *my_malloc(size_t size) {
-  if (!prv_init) {
+  if (!s_init) {
     prv_setup();
-    prv_init = 1;
+    s_init = 1;
   }
 
-  while (prv_end_break - prv_start_available < size) {
+  while (s_end_break - s_start_available < size) {
     prv_add_page();
   }
 
-  void *pointer_to_return = prv_start_available;
-  prv_start_available += size;
+  void *pointer_to_return = s_start_available;
+  s_start_available += size;
 
   return pointer_to_return;
 }
 
 void cleanup(void) {
-  brk(prv_start_break);
+  brk(s_start_break);
 }
